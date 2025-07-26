@@ -34,30 +34,41 @@ body {
 .container {
   text-align: center;
   z-index: 1;
-  position: relative; /* added so absolute children are relative to this */
+  position: relative; /* for absolute children */
+  max-width: 400px;
+  width: 100%;
 }
 
-/* Fade in on load */
+/* Fade animations */
 .fade-in {
   animation: fadeIn 1.4s ease forwards;
 }
+.fade-out {
+  animation: fadeOutAnim 0.5s forwards;
+}
+
+/* Miyu image container to control layout */
+.miyu-container {
+  position: relative;
+  width: 180px;
+  margin: 0 auto 30px auto;
+  animation: float 4s ease-in-out infinite;
+}
 
 /* Miyu image */
-.miyu {
-  width: 180px;
-  animation: float 4s ease-in-out infinite;
-  margin-bottom: 30px;
-
-  /* Removed any fade transitions */
+#miyu-img {
+  width: 100%;
+  display: block;
+  user-select: none;
+  pointer-events: none;
 }
 
 /* Text bubble for Miyu */
-.miyu-talk {
-  position: absolute;       /* absolutely positioned */
-  bottom: -60px;            /* place below Miyu (adjust as needed) */
-  left: 50%;                /* center horizontally */
+#miyu-talk {
+  position: absolute;
+  bottom: -50px; /* below Miyu */
+  left: 50%;
   transform: translateX(-50%);
-  margin: 0;                /* remove vertical margins */
   max-width: 320px;
   background: #ff99ccdd;
   color: #3a0028;
@@ -69,12 +80,13 @@ body {
   opacity: 0;
   transition: opacity 0.4s ease;
   user-select: none;
+  pointer-events: none;
+  white-space: nowrap;
   transform-origin: center;
-  pointer-events: none;     /* so it doesn’t block clicks */
-  white-space: nowrap;      /* keep text in one line */
+  z-index: 2;
 }
 
-.miyu-talk.visible {
+#miyu-talk.visible {
   animation: popIn 0.3s forwards;
   opacity: 1;
 }
@@ -83,16 +95,19 @@ body {
   display: none !important;
 }
 
-/* Search box styling */
-.search-box {
+/* Search form */
+#searchForm {
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 12px;
+  margin-top: 10px;
 }
 
+/* Search input */
 #searchInput {
-  width: 320px;
+  flex: 1;
+  min-width: 0;
   padding: 12px 20px;
   border-radius: 999px;
   border: 1px solid #444;
@@ -100,7 +115,7 @@ body {
   color: #fff;
   font-size: 16px;
   outline: none;
-  transition: 0.3s;
+  transition: border-color 0.3s ease, background-color 0.3s ease;
 }
 
 #searchInput:focus {
@@ -118,7 +133,8 @@ button {
   font-weight: 500;
   color: #fff;
   cursor: pointer;
-  transition: 0.3s ease;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  user-select: none;
 }
 
 button:hover {
@@ -126,23 +142,80 @@ button:hover {
   box-shadow: 0 0 10px #f78fb388;
 }
 
+/* Suggestions container */
+#suggestions {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  max-width: 320px;
+  width: 100%;
+  background: #1c1d24dd;
+  border-radius: 8px;
+  box-shadow: 0 0 10px #ff99cc88;
+  margin-top: 6px;
+  z-index: 10;
+  overflow: hidden;
+  user-select: none;
+}
+
+/* Suggestion item */
+.suggestion-item {
+  padding: 10px 15px;
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.suggestion-item:hover {
+  background-color: #ff99cccc;
+  color: #3a0028;
+}
+
 /* Animations */
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeOutAnim {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
 }
 
 @keyframes float {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-10px); }
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
 }
 
 @keyframes pulse {
-  0% { transform: scale(1); opacity: 0.15; }
-  100% { transform: scale(1.2); opacity: 0.25; }
+  0% {
+    transform: scale(1);
+    opacity: 0.15;
+  }
+  100% {
+    transform: scale(1.2);
+    opacity: 0.25;
+  }
 }
 
-/* Pop-in animation for text bubble */
 @keyframes popIn {
   0% {
     opacity: 0;
@@ -152,13 +225,4 @@ button:hover {
     opacity: 1;
     transform: scale(1);
   }
-}
-
-.fade-out {
-  animation: fadeOutAnim 0.5s forwards;
-}
-
-@keyframes fadeOutAnim {
-  from { opacity: 1; }
-  to { opacity: 0; }
 }

@@ -2,7 +2,6 @@ const form = document.getElementById('searchForm');
 const input = document.getElementById('searchInput');
 const suggestionsContainer = document.createElement('div');
 suggestionsContainer.id = 'suggestions';
-suggestionsContainer.className = 'suggestions-list';
 form.appendChild(suggestionsContainer);
 
 const miyuImg = document.getElementById('miyu-img');
@@ -18,18 +17,16 @@ const nsfwWords = [
 const normalSprite = 'assets/1.webp';
 const nervousSprite = 'assets/4.webp';
 const blinkSprite = 'assets/13.webp';
-const mockingSprite = 'assets/5.webp'; // New sprite for teasing
+const mockingSprite = 'assets/5.webp'; // Teasing sprite
 
 let blinkTimeout = null;
 let eyesOpenTimeout = null;
 let isNervous = false;
 
-// Track consecutive NSFW searches
 let nsfwCount = 0;
 const NSFW_LIMIT = 3;
 
-// --- BLINKING LOGIC ---
-
+// BLINKING LOGIC
 function startBlinking() {
   clearTimeout(blinkTimeout);
   clearTimeout(eyesOpenTimeout);
@@ -48,7 +45,7 @@ function startBlinking() {
       miyuImg.src = normalSprite;
 
       blinkTimeout = setTimeout(blinkCycle, 3000);
-    }, 300); // eyes closed duration
+    }, 150); // shorter blink duration for less fade effect
   }
 
   blinkTimeout = setTimeout(blinkCycle, 3000);
@@ -60,15 +57,13 @@ function stopBlinkingAndSetSprite(sprite) {
   miyuImg.src = sprite;
 }
 
-// --- NSFW CHECK ---
-
+// NSFW CHECK
 function containsNSFW(query) {
   const lowered = query.toLowerCase();
   return nsfwWords.some(word => lowered.includes(word));
 }
 
-// --- LOCALSTORAGE: Save & Load User Searches ---
-
+// LOCALSTORAGE: Save & Load User Searches
 function saveSearchTerm(term) {
   if (!term) return;
   let searches = JSON.parse(localStorage.getItem('nyanko_searches')) || {};
@@ -84,8 +79,7 @@ function getUserTopSearches(limit = 10) {
   return sorted.slice(0, limit);
 }
 
-// --- AUTOCOMPLETE SUGGESTIONS ---
-
+// AUTOCOMPLETE SUGGESTIONS
 input.addEventListener('input', () => {
   const query = input.value.toLowerCase().trim();
 
@@ -116,8 +110,7 @@ document.addEventListener('click', (e) => {
   }
 });
 
-// --- FORM SUBMIT with fade-out transition & teasing for NSFW ---
-
+// FORM SUBMIT with fade-out and teasing for NSFW
 form.addEventListener('submit', function (e) {
   e.preventDefault();
   const query = input.value.trim();
@@ -129,7 +122,6 @@ form.addEventListener('submit', function (e) {
     if (nsfwCount > NSFW_LIMIT) {
       stopBlinkingAndSetSprite(mockingSprite);
       miyuTalk.textContent = "desperate...";
-      messageDuration = 8000
     } else {
       stopBlinkingAndSetSprite(nervousSprite);
       miyuTalk.textContent = "???";
@@ -148,12 +140,10 @@ form.addEventListener('submit', function (e) {
     return;
   }
 
-  // Reset NSFW counter on clean search
   nsfwCount = 0;
 
   if (!query) return;
 
-  // Save user search term
   saveSearchTerm(query);
 
   isNervous = false;
@@ -164,19 +154,16 @@ form.addEventListener('submit', function (e) {
 
   suggestionsContainer.innerHTML = '';
 
-  // Add fade-out animation class
   const container = document.querySelector('.container');
   container.classList.add('fade-out');
 
-  // Redirect after fade completes
   setTimeout(() => {
     const encoded = encodeURIComponent(query);
     window.location.href = `https://www.google.com/search?q=${encoded}`;
-  }, 500); // match CSS animation duration
+  }, 500);
 });
 
-// --- BACKGROUND MUSIC CONTROL ---
-
+// BACKGROUND MUSIC CONTROL
 bgMusic.muted = true;
 bgMusic.volume = 0.3;
 
@@ -188,14 +175,12 @@ function playMusicOnClick() {
 
 document.addEventListener('click', playMusicOnClick);
 
-// --- KEYPRESS SOUND WITH PITCH VARIATION ---
-
+// KEYPRESS SOUND WITH PITCH VARIATION
 const audioContext = new (window.AudioContext || window.webkitAudioContext)();
 let keypressBuffer = null;
 
-const KEYPRESS_VOLUME = 0.15; // Adjust keypress volume here
+const KEYPRESS_VOLUME = 0.15;
 
-// Load and decode keypress sound
 fetch('assets/keypress.mp3')
   .then(response => response.arrayBuffer())
   .then(arrayBuffer => audioContext.decodeAudioData(arrayBuffer))
@@ -210,10 +195,8 @@ function playKeypressSound() {
   const source = audioContext.createBufferSource();
   source.buffer = keypressBuffer;
 
-  // Random playbackRate between 0.9 and 1.1 for subtle pitch change
   source.playbackRate.value = 0.9 + Math.random() * 0.2;
 
-  // Gain node for volume control
   const gainNode = audioContext.createGain();
   gainNode.gain.value = KEYPRESS_VOLUME;
 
@@ -229,6 +212,5 @@ input.addEventListener('keydown', () => {
   playKeypressSound();
 });
 
-// --- START BLINKING ON LOAD ---
-
+// START BLINKING ON LOAD
 startBlinking();
