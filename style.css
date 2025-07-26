@@ -1,0 +1,164 @@
+/* Reset and base style */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: radial-gradient(ellipse at center, #181920 0%, #121218 100%);
+  font-family: 'Outfit', sans-serif;
+  color: #ffffffcc;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Glow effect */
+.glow-overlay {
+  position: absolute;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(255, 153, 204, 0.1), transparent 70%);
+  filter: blur(90px);
+  animation: pulse 6s infinite alternate;
+  z-index: 0;
+  top: 20%;
+  left: 30%;
+}
+
+/* Main container */
+.container {
+  text-align: center;
+  z-index: 1;
+  position: relative; /* added so absolute children are relative to this */
+}
+
+/* Fade in on load */
+.fade-in {
+  animation: fadeIn 1.4s ease forwards;
+}
+
+/* Miyu image */
+.miyu {
+  width: 180px;
+  animation: float 4s ease-in-out infinite;
+  margin-bottom: 30px;
+
+  /* Removed any fade transitions */
+}
+
+/* Text bubble for Miyu */
+.miyu-talk {
+  position: absolute;       /* absolutely positioned */
+  bottom: -60px;            /* place below Miyu (adjust as needed) */
+  left: 50%;                /* center horizontally */
+  transform: translateX(-50%);
+  margin: 0;                /* remove vertical margins */
+  max-width: 320px;
+  background: #ff99ccdd;
+  color: #3a0028;
+  font-weight: 600;
+  font-size: 14px;
+  padding: 8px 15px;
+  border-radius: 15px;
+  box-shadow: 0 0 15px #f78fb3cc;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  user-select: none;
+  transform-origin: center;
+  pointer-events: none;     /* so it doesn’t block clicks */
+  white-space: nowrap;      /* keep text in one line */
+}
+
+.miyu-talk.visible {
+  animation: popIn 0.3s forwards;
+  opacity: 1;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* Search box styling */
+.search-box {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+}
+
+#searchInput {
+  width: 320px;
+  padding: 12px 20px;
+  border-radius: 999px;
+  border: 1px solid #444;
+  background: #1c1d24;
+  color: #fff;
+  font-size: 16px;
+  outline: none;
+  transition: 0.3s;
+}
+
+#searchInput:focus {
+  border-color: #ff99cc;
+  background: #24252e;
+}
+
+/* Search button */
+button {
+  padding: 12px 24px;
+  background: linear-gradient(to right, #ff99cc, #f78fb3);
+  border: none;
+  border-radius: 999px;
+  font-size: 16px;
+  font-weight: 500;
+  color: #fff;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 10px #f78fb388;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); opacity: 0.15; }
+  100% { transform: scale(1.2); opacity: 0.25; }
+}
+
+/* Pop-in animation for text bubble */
+@keyframes popIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.fade-out {
+  animation: fadeOutAnim 0.5s forwards;
+}
+
+@keyframes fadeOutAnim {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}

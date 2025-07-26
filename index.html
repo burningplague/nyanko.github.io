@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>nyanko</title>
+  <link rel="icon" href="assets/nyankof.png" type="image/x-icon" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="glow-overlay"></div>
+
+  <div class="container fade-in">
+    <img id="miyu-img" class="miyu" src="assets/1.webp" alt="Miyu sprite" />
+    <div id="miyu-talk" class="miyu-talk hidden"></div>
+
+    <form id="searchForm" class="search-box">
+      <input type="text" id="searchInput" autocomplete="off" placeholder="Search Google with Nyanko..." />
+      <button type="submit">Search</button>
+    </form>
+  </div>
+
+  <!-- Removed autoplay and muted here -->
+  <audio id="bg-music" src="assets/nyankobg.mp3" loop></audio>
+
+  <script src="script.js"></script>
+</body>
+</html>
