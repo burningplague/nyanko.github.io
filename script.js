@@ -17,7 +17,7 @@ const nsfwWords = [
 const normalSprite = 'assets/1.webp';
 const nervousSprite = 'assets/4.webp';
 const blinkSprite = 'assets/13.webp';
-const mockingSprite = 'assets/5.webp'; // Teasing sprite
+const mockingSprite = 'assets/5.webp';
 
 let blinkTimeout = null;
 let eyesOpenTimeout = null;
