@@ -13,7 +13,12 @@ const nsfwWords = [
   'fuck', 'shit', 'bitch', 'ass', 'dick', 'cock', 'pussy'
 ];
 
-// Sprites
+const nsfwDomains = [
+  'pornhub.com', 'xvideos.com', 'redtube.com', 'xhamster.com',
+  'xnxx.com', 'onlyfans.com', 'rule34', 'hentai', 'erome.com',
+  'furaffinity.net', 'nhentai.net', 'e621.net', 'realbooru.com'
+];
+
 const normalSprite = 'assets/1.webp';
 const nervousSprite = 'assets/4.webp';
 const blinkSprite = 'assets/13.webp';
@@ -26,26 +31,21 @@ let isNervous = false;
 let nsfwCount = 0;
 const NSFW_LIMIT = 3;
 
-// BLINKING LOGIC
 function startBlinking() {
   clearTimeout(blinkTimeout);
   clearTimeout(eyesOpenTimeout);
   isNervous = false;
-
   miyuImg.src = normalSprite;
 
   function blinkCycle() {
     if (isNervous) return;
-
     miyuImg.src = blinkSprite;
 
     eyesOpenTimeout = setTimeout(() => {
       if (isNervous) return;
-
       miyuImg.src = normalSprite;
-
       blinkTimeout = setTimeout(blinkCycle, 3000);
-    }, 150); // shorter blink duration for less fade effect
+    }, 150);
   }
 
   blinkTimeout = setTimeout(blinkCycle, 3000);
@@ -57,13 +57,16 @@ function stopBlinkingAndSetSprite(sprite) {
   miyuImg.src = sprite;
 }
 
-// NSFW CHECK
 function containsNSFW(query) {
   const lowered = query.toLowerCase();
   return nsfwWords.some(word => lowered.includes(word));
 }
 
-// LOCALSTORAGE: Save & Load User Searches
+function isNSFWDomain(link) {
+  const url = link.toLowerCase();
+  return nsfwDomains.some(domain => url.includes(domain));
+}
+
 function saveSearchTerm(term) {
   if (!term) return;
   let searches = JSON.parse(localStorage.getItem('nyanko_searches')) || {};
@@ -73,23 +76,19 @@ function saveSearchTerm(term) {
 
 function getUserTopSearches(limit = 10) {
   let searches = JSON.parse(localStorage.getItem('nyanko_searches')) || {};
-  const sorted = Object.entries(searches)
+  return Object.entries(searches)
     .sort((a, b) => b[1] - a[1])
-    .map(entry => entry[0]);
-  return sorted.slice(0, limit);
+    .map(entry => entry[0])
+    .slice(0, limit);
 }
 
-// AUTOCOMPLETE SUGGESTIONS
 input.addEventListener('input', () => {
   const query = input.value.toLowerCase().trim();
-
   suggestionsContainer.innerHTML = '';
   if (!query) return;
 
-  // Get user searches matching input
-  const userTop = getUserTopSearches(10).filter(term => term.toLowerCase().startsWith(query));
+  const userTop = getUserTopSearches(10).filter(term => term.startsWith(query));
 
-  // Show up to 5 suggestions from user data
   userTop.slice(0, 5).forEach(suggestion => {
     const div = document.createElement('div');
     div.textContent = suggestion;
@@ -103,17 +102,16 @@ input.addEventListener('input', () => {
   });
 });
 
-// Hide suggestions when clicking outside
 document.addEventListener('click', (e) => {
   if (!suggestionsContainer.contains(e.target) && e.target !== input) {
     suggestionsContainer.innerHTML = '';
   }
 });
 
-// FORM SUBMIT with fade-out and teasing for NSFW
-form.addEventListener('submit', function (e) {
+form.addEventListener('submit', async function (e) {
   e.preventDefault();
   const query = input.value.trim();
+  if (!query) return;
 
   if (containsNSFW(query)) {
     nsfwCount++;
@@ -133,37 +131,81 @@ form.addEventListener('submit', function (e) {
     setTimeout(() => {
       miyuTalk.classList.remove('visible');
       miyuTalk.classList.add('hidden');
-
       startBlinking();
     }, 5000);
-
     return;
   }
 
   nsfwCount = 0;
-
-  if (!query) return;
-
-  saveSearchTerm(query);
-
   isNervous = false;
   miyuTalk.classList.remove('visible');
   miyuTalk.classList.add('hidden');
 
   startBlinking();
-
+  saveSearchTerm(query);
   suggestionsContainer.innerHTML = '';
 
-  const container = document.querySelector('.container');
-  container.classList.add('fade-out');
+  const searchContainer = document.querySelector('#search-container') || form.parentElement;
+  if (searchContainer) searchContainer.classList.add('shifted');
+  miyuImg.classList.add('shifted');
+  miyuTalk.classList.add('shifted');
 
-  setTimeout(() => {
+  const resultsWindow = document.getElementById('results-window');
+  resultsWindow.classList.remove('active');
+
+  setTimeout(async () => {
     const encoded = encodeURIComponent(query);
-    window.location.href = `https://www.google.com/search?q=${encoded}`;
+    const apiKey = 'AIzaSyDbkvi0FMb6X8UMD8iGtXZHJF0JhME-FbM';
+    const cx = 'c18bbcb34a36f4320';
+    const url = `https://www.googleapis.com/customsearch/v1?q=${encoded}&key=${apiKey}&cx=${cx}`;
+
+    try {
+      const res = await fetch(url);
+      const data = await res.json();
+
+      resultsWindow.innerHTML = '';
+
+      if (!data.items || data.items.length === 0) {
+        miyuTalk.textContent = "No results... sorry.";
+        miyuTalk.classList.add('visible');
+        resultsWindow.classList.remove('active');
+        return;
+      }
+
+      const topItem = data.items[0];
+
+      if (containsNSFW(topItem.link.toLowerCase()) || isNSFWDomain(topItem.link)) {
+        stopBlinkingAndSetSprite(mockingSprite);
+        miyuTalk.textContent = "blocked... bad kitty.";
+        miyuTalk.classList.add('visible');
+        resultsWindow.classList.remove('active');
+        return;
+      }
+
+      const result = document.createElement('div');
+      result.className = 'search-result';
+
+      result.innerHTML = `
+        <a href="${topItem.link}" target="_blank" class="result-title">${topItem.title}</a>
+        <p class="result-snippet">${topItem.snippet}</p>
+      `;
+
+      resultsWindow.appendChild(result);
+      resultsWindow.classList.add('active');
+
+      
+
+
+    } catch (err) {
+      console.error('Search failed:', err);
+      miyuTalk.textContent = "error... try again?";
+      miyuTalk.classList.add('visible');
+    }
   }, 500);
 });
 
-// BACKGROUND MUSIC CONTROL
+
+
 bgMusic.muted = true;
 bgMusic.volume = 0.3;
 
@@ -175,10 +217,8 @@ function playMusicOnClick() {
 
 document.addEventListener('click', playMusicOnClick);
 
-// KEYPRESS SOUND WITH PITCH VARIATION
 const audioContext = new (window.AudioContext || window.webkitAudioContext)();
 let keypressBuffer = null;
-
 const KEYPRESS_VOLUME = 0.15;
 
 fetch('assets/keypress.mp3')
@@ -194,7 +234,6 @@ function playKeypressSound() {
 
   const source = audioContext.createBufferSource();
   source.buffer = keypressBuffer;
-
   source.playbackRate.value = 0.9 + Math.random() * 0.2;
 
   const gainNode = audioContext.createGain();
@@ -212,5 +251,4 @@ input.addEventListener('keydown', () => {
   playKeypressSound();
 });
 
-// START BLINKING ON LOAD
 startBlinking();

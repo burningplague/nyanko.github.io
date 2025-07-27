@@ -39,14 +39,6 @@ body {
   width: 100%;
 }
 
-/* Fade animations */
-.fade-in {
-  animation: fadeIn 1.4s ease forwards;
-}
-.fade-out {
-  animation: fadeOutAnim 0.5s forwards;
-}
-
 /* Miyu image container to control layout */
 .miyu-container {
   position: relative;
@@ -57,17 +49,27 @@ body {
 
 /* Miyu image */
 #miyu-img {
+  position: absolute;
+  left: 50%;
+  bottom: -50px;
   width: 100%;
   display: block;
   user-select: none;
   pointer-events: none;
+  transform: translateX(-50%);
+  transition: all 0.5s ease;
+}
+
+#miyu-img.shifted {
+  left: 275%;   /* moved farther right */
+  transform: translateX(-50%);
 }
 
 /* Text bubble for Miyu */
 #miyu-talk {
   position: absolute;
-  bottom: -50px; /* below Miyu */
-  left: 50%;
+  bottom: -150px; /* below Miyu */
+  left: 45%;
   transform: translateX(-50%);
   max-width: 320px;
   background: #ff99ccdd;
@@ -91,8 +93,29 @@ body {
   opacity: 1;
 }
 
+#miyu-talk.shifted {
+    left: 265%;
+}
+
 .hidden {
   display: none !important;
+}
+
+/* Search container */
+#search-container {
+  position: absolute;
+  top: 50px;
+  left: 50%;
+  transform: translateX(-50%);
+  transition: all 0.5s ease;
+  width: 60%;
+  max-width: 500px;
+}
+
+#search-container.shifted {
+  left: 150%;   /* moved farther right */
+  transform: translateX(-50%);
+  width: 300px;
 }
 
 /* Search form */
@@ -102,6 +125,7 @@ body {
   align-items: center;
   gap: 12px;
   margin-top: 10px;
+  position: relative; /* for suggestions absolute positioning */
 }
 
 /* Search input */
@@ -121,25 +145,6 @@ body {
 #searchInput:focus {
   border-color: #ff99cc;
   background: #24252e;
-}
-
-/* Search button */
-button {
-  padding: 12px 24px;
-  background: linear-gradient(to right, #ff99cc, #f78fb3);
-  border: none;
-  border-radius: 999px;
-  font-size: 16px;
-  font-weight: 500;
-  color: #fff;
-  cursor: pointer;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  user-select: none;
-}
-
-button:hover {
-  transform: scale(1.05);
-  box-shadow: 0 0 10px #f78fb388;
 }
 
 /* Suggestions container */
@@ -175,27 +180,58 @@ button:hover {
   color: #3a0028;
 }
 
+/* Result title link */
+.result-title {
+  font-weight: bold;
+  font-size: 1.1rem;
+  color: #448aff;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* Result snippet */
+.result-snippet {
+  font-size: 0.9rem;
+  color: #eee;
+}
+
+/* Result container */
+.results-container {
+  margin-top: 2rem;
+  padding: 1rem;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.search-result {
+  padding: 10px;
+  border-bottom: 1px solid #ccc;
+}
+
+/* Result box */
+#results-window {
+  position: absolute;
+  top: 445px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 25%;
+  max-width: 700px;
+  background: rgba(255, 255, 255, 0);
+  padding: 10px;
+  border-radius: 16px;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.2);
+  transition: all 0.5s ease;
+  display: none;
+  z-index: 5;
+}
+
+#results-window.active {
+    animation: popIn 0.3s;
+    display: block;
+}
+
 /* Animations */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes fadeOutAnim {
-  from {
-    opacity: 1;
-  }
-  to {
-    opacity: 0;
-  }
-}
-
 @keyframes float {
   0%, 100% {
     transform: translateY(0px);
@@ -219,10 +255,10 @@ button:hover {
 @keyframes popIn {
   0% {
     opacity: 0;
-    transform: scale(0.85);
+    transform: translateX(-50%) scale(0.85);
   }
   100% {
     opacity: 1;
-    transform: scale(1);
+    transform:translateX(-50%) scale(1);
   }
 }

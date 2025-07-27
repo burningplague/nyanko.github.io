@@ -9,24 +9,33 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="container fade-in">
-    <form id="searchForm">
-      <input
-        id="searchInput"
-        type="text"
-        placeholder="Search with Nyanko..."
-        autocomplete="off"
-        spellcheck="false"
-      />
-    </form>
+  
+  <!-- Results window outside main container, as in your JS -->
+  <div id="results-window"></div>
 
-    <!-- Suggestions will be injected here by JS -->
-    
-    <!-- Miyu sprite and speech -->
+  <div class="container fade-in">
+    <!-- Search container wraps form and suggestions for shifting -->
+    <div id="search-container">
+      <form id="searchForm">
+        <input
+          id="searchInput"
+          type="text"
+          placeholder="Search with Nyanko..."
+          autocomplete="off"
+          spellcheck="false"
+        />
+      </form>
+      <!-- Suggestions container will be appended here by JS -->
+    </div>
+
+    <!-- Miyu sprite and speech container -->
     <div class="miyu-container">
       <img id="miyu-img" src="assets/1.webp" alt="Miyu" />
       <div id="miyu-talk" class="miyu-talk hidden">...</div>
     </div>
+
+    <!-- Search results container -->
+    <div id="search-results" class="results-container"></div>
   </div>
 
   <!-- Background music -->
