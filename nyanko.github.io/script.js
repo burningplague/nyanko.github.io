@@ -10,13 +10,13 @@ const bgMusic = document.getElementById('bg-music');
 
 const nsfwWords = [
   'nsfw', 'sex', 'porn', 'nude', 'naked', 'xxx',
-  'fuck', 'shit', 'bitch', 'ass', 'dick', 'cock', 'pussy'
+  'fuck', 'shit', 'bitch', 'ass', 'dick', 'cock', 'pussy', 'booru', 'loli'
 ];
 
 const nsfwDomains = [
   'pornhub.com', 'xvideos.com', 'redtube.com', 'xhamster.com',
   'xnxx.com', 'onlyfans.com', 'rule34', 'hentai', 'erome.com',
-  'furaffinity.net', 'nhentai.net', 'e621.net', 'realbooru.com'
+  'furaffinity.net', 'nhentai.net', 'e621.net', 'realbooru.com', 'booru'
 ];
 
 const normalSprite = 'assets/1.webp';
@@ -155,9 +155,9 @@ form.addEventListener('submit', async function (e) {
 
   setTimeout(async () => {
     const encoded = encodeURIComponent(query);
-    const apiKey = 'AIzaSyDbkvi0FMb6X8UMD8iGtXZHJF0JhME-FbM';
-    const cx = 'c18bbcb34a36f4320';
-    const url = `https://www.googleapis.com/customsearch/v1?q=${encoded}&key=${apiKey}&cx=${cx}`;
+    const url = `/api/search?q=${encoded}`;
+    const res = await fetch(url);
+
 
     try {
       const res = await fetch(url);
@@ -193,9 +193,6 @@ form.addEventListener('submit', async function (e) {
       resultsWindow.appendChild(result);
       resultsWindow.classList.add('active');
 
-      
-
-
     } catch (err) {
       console.error('Search failed:', err);
       miyuTalk.textContent = "error... try again?";
@@ -203,8 +200,6 @@ form.addEventListener('submit', async function (e) {
     }
   }, 500);
 });
-
-
 
 bgMusic.muted = true;
 bgMusic.volume = 0.3;
@@ -252,3 +247,47 @@ input.addEventListener('keydown', () => {
 });
 
 startBlinking();
+
+const muteBtn = document.getElementById('mute-btn');
+
+muteBtn.addEventListener('click', () => {
+  if (bgMusic.muted) {
+    bgMusic.muted = false;
+    muteBtn.textContent = 'Mute';
+  } else {
+    bgMusic.muted = true;
+    muteBtn.textContent = 'Unmute';
+  }
+});
+
+const darkModeToggle = document.getElementById('dark-mode-toggle');
+
+function applyMode(mode) {
+  if (mode === 'dark') {
+    document.body.classList.remove('light-mode');
+    document.body.classList.add('dark-mode');
+    darkModeToggle.textContent = 'Switch to Light Mode';
+  } else {
+    document.body.classList.remove('dark-mode');
+    document.body.classList.add('light-mode');
+    darkModeToggle.textContent = 'Switch to Dark Mode';
+  }
+  localStorage.setItem('mode', mode);
+}
+
+// On load, check saved mode or system preference
+const savedMode = localStorage.getItem('mode');
+if (savedMode) {
+  applyMode(savedMode);
+} else {
+  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  applyMode(prefersDark ? 'dark' : 'light');
+}
+
+darkModeToggle.addEventListener('click', () => {
+  if (document.body.classList.contains('dark-mode')) {
+    applyMode('light');
+  } else {
+    applyMode('dark');
+  }
+});

@@ -1,0 +1,36 @@
+# Node.js dependencies
+node_modules/
+
+# Environment variables file
+.env
+.env.local
+.env.*.local
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Vercel build output
+.vercel/
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Editor directories and files
+.vscode/
+.idea/
+
+# Optional: ignore build folders if you have any
+dist/
+build/
+
+# Ignore any local development files
+*.local
+
+# Ignore macOS metadata files
+.AppleDouble
+.LSOverride

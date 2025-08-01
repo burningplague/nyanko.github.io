@@ -9,13 +9,12 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  
-  <!-- Results window outside main container, as in your JS -->
-  <div id="results-window"></div>
+
 
   <div class="container fade-in">
     <!-- Search container wraps form and suggestions for shifting -->
     <div id="search-container">
+      <div id="results-window"></div>
       <form id="searchForm">
         <input
           id="searchInput"
@@ -24,6 +23,7 @@
           autocomplete="off"
           spellcheck="false"
         />
+        </a>
       </form>
       <!-- Suggestions container will be appended here by JS -->
     </div>
@@ -36,6 +36,10 @@
 
     <!-- Search results container -->
     <div id="search-results" class="results-container"></div>
+  </div>
+  <div id="buttons-row">
+    <button id="mute-btn" type="button" class="mute-button">Mute</button>
+    <button id="dark-mode-toggle" type="button">Dark Mode</button>
   </div>
 
   <!-- Background music -->
