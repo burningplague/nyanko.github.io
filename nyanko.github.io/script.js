@@ -154,14 +154,15 @@ form.addEventListener('submit', async function (e) {
   resultsWindow.classList.remove('active');
 
   setTimeout(async () => {
-    const res = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
-    const data = await res.json();
-
+    const encoded = encodeURIComponent(query);
+    const url = `/api/search?q=${encoded}`;
+    const res = await fetch(url);
 
 
     try {
-      const res = await fetch(url);
+      const res = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
       const data = await res.json();
+
 
       resultsWindow.innerHTML = '';
 
